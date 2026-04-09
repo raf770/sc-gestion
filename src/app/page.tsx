@@ -783,33 +783,23 @@ function Analytics() {
   const [data, setData] = useState<any>(null)
 
   const connect = () => {
-    if (!gaId) return alert('Entre ton ID de propriété GA4')
     setLoading(true)
-    setTimeout(() => {
-      setConnected(true)
-      setLoading(false)
-      setData({
-        users: 2847, newUsers: 1203, sessions: 4521, pageviews: 12340, bounceRate: 42.3, avgDuration: '2m 34s',
-        topPages: [
-          { page: '/produits', views: 3420, users: 1890 },
-          { page: '/', views: 2810, users: 2100 },
-          { page: '/catalogue', views: 1950, users: 1340 },
-          { page: '/contact', views: 890, users: 670 },
-          { page: '/panier', views: 560, users: 420 },
-        ],
-        topSources: [
-          { source: 'google / organic', sessions: 1820, pct: 40.3 },
-          { source: 'direct', sessions: 1200, pct: 26.5 },
-          { source: 'facebook / cpc', sessions: 680, pct: 15.0 },
-          { source: 'instagram / social', sessions: 450, pct: 10.0 },
-          { source: 'linkedin / social', sessions: 371, pct: 8.2 },
-        ],
-        daily: Array.from({length: 30}, (_, i) => ({ day: i + 1, users: Math.floor(Math.random() * 150 + 50), sessions: Math.floor(Math.random() * 200 + 80) }))
+    fetch('/api/analytics?days=' + period)
+      .then(r => r.json())
+      .then(d => {
+        if (d.error) { alert('Erreur GA4: ' + d.error); setLoading(false); return }
+        setConnected(true); setLoading(false); setData(d)
       })
-    }, 1500)
+      .catch(e => { alert('Erreur: ' + e.message); setLoading(false) })
   }
 
-  const disconnect = () => { setConnected(false); setData(null); setGaId('') }
+  const disconnect = () => { setConnected(false); setData(null) }
+
+  useEffect(() => {
+    if (connected) {
+      fetch('/api/analytics?days=' + period).then(r => r.json()).then(d => { if (!d.error) setData(d) })
+    }
+  }, [period, connected])
 
   const Card = ({ label, value, color, sub }: { label: string; value: string | number; color: string; sub?: string }) => (
     <div style={{ background: '#fff', borderRadius: 8, padding: '16px 18px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', borderLeft: '4px solid ' + color }}>
@@ -830,7 +820,7 @@ function Analytics() {
             <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 12 }}>Connecter Google Analytics</h2>
             <p style={{ color: '#6b7280', fontSize: 14, marginTop: 8 }}>Visualise les performances de ton site directement dans SC Gestion</p>
           </div>
-          <FormField label="ID Propriété GA4 (ex: 123456789)" value={gaId} onChange={setGaId} placeholder="123456789" />
+          <div style={{ padding: '12px 16px', background: '#dcfce7', borderRadius: 8, fontSize: 14, color: '#16a34a', fontWeight: 500 }}>✅ Propriété GA4 : 279909061 (configurée côté serveur)</div>
           <div style={{ marginTop: 8, padding: 12, background: '#f9fafb', borderRadius: 6, fontSize: 12, color: '#6b7280', marginBottom: 16 }}>
             💡 Va dans Google Analytics → Admin → Paramètres de la propriété → ID de propriété. En production, on utilisera un compte de service Google (JSON key) + l API Google Analytics Data API v1.
           </div>
@@ -867,7 +857,7 @@ function Analytics() {
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 120 }}>
                     {data.daily.map((d: any, i: number) => {
                       const maxVal = Math.max(...data.daily.map((x: any) => x.users))
-                      return <div key={i} style={{ flex: 1, background: '#4285f4', borderRadius: '2px 2px 0 0', height: Math.max((d.users / maxVal) * 110, 2), opacity: 0.7 }} title={'J' + d.day + ': ' + d.users + ' users'} />
+                      return <div key={i} style={{ flex: 1, background: '#4285f4', borderRadius: '2px 2px 0 0', height: Math.max((d.users / maxVal) * 110, 2), opacity: 0.7 }} title={(d.date || '') + ': ' + d.users + ' users'} />
                     })}
                   </div>
                 </div>
