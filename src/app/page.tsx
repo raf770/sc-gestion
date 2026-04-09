@@ -774,32 +774,21 @@ function SocialMedia() {
 }
 // ========== GOOGLE ANALYTICS ==========
 function Analytics() {
-  const [gaId, setGaId] = useState('')
-  const [connected, setConnected] = useState(false)
   const [period, setPeriod] = useState('30')
-  const [loading, setLoading] = useState(false)
-
-  // Simulated data - in production this comes from Google Analytics Data API
+  const [loading, setLoading] = useState(true)
   const [data, setData] = useState<any>(null)
+  const [error, setError] = useState('')
 
-  const connect = () => {
+  useEffect(() => {
     setLoading(true)
     fetch('/api/analytics?days=' + period)
       .then(r => r.json())
       .then(d => {
-        if (d.error) { alert('Erreur GA4: ' + d.error); setLoading(false); return }
-        setConnected(true); setLoading(false); setData(d)
+        if (d.error) { setError(d.error); setLoading(false); return }
+        setData(d); setError(''); setLoading(false)
       })
-      .catch(e => { alert('Erreur: ' + e.message); setLoading(false) })
-  }
-
-  const disconnect = () => { setConnected(false); setData(null) }
-
-  useEffect(() => {
-    if (connected) {
-      fetch('/api/analytics?days=' + period).then(r => r.json()).then(d => { if (!d.error) setData(d) })
-    }
-  }, [period, connected])
+      .catch(e => { setError(e.message); setLoading(false) })
+  }, [period])
 
   const Card = ({ label, value, color, sub }: { label: string; value: string | number; color: string; sub?: string }) => (
     <div style={{ background: '#fff', borderRadius: 8, padding: '16px 18px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', borderLeft: '4px solid ' + color }}>
@@ -828,16 +817,15 @@ function Analytics() {
             {loading ? '⏳ Connexion...' : '🔗 Connecter Google Analytics'}
           </button>
         </div>
-      ) : (
+      return (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              <span style={{ padding: '4px 12px', background: '#dcfce7', color: '#16a34a', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>● Connecté — GA4 #{gaId}</span>
+              <span style={{ padding: '4px 12px', background: '#dcfce7', color: '#16a34a', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>● GA4 connecté</span>
               <select value={period} onChange={e => setPeriod(e.target.value)} style={{ padding: '6px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 13 }}>
                 <option value="7">7 derniers jours</option><option value="30">30 derniers jours</option><option value="90">90 derniers jours</option>
               </select>
             </div>
-            <button onClick={disconnect} style={{ padding: '6px 14px', border: '1px solid #ef4444', color: '#ef4444', borderRadius: 6, background: '#fff', cursor: 'pointer', fontSize: 13 }}>Déconnecter</button>
           </div>
 
           {data && (
@@ -886,7 +874,6 @@ function Analytics() {
             </>
           )}
         </div>
-      )}
     </div>
   )
 }
@@ -949,7 +936,7 @@ function Campaigns() {
             {loading ? '⏳ Connexion...' : '🔗 Connecter Google Ads'}
           </button>
         </div>
-      ) : (
+      return (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
