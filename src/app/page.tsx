@@ -435,53 +435,6 @@ function ClientsList() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}><h1 style={{ fontSize: 24, fontWeight: 700 }}>Clients ({total})</h1><button onClick={openNew} style={{ padding: '10px 20px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>+ Nouveau</button></div>
       
-      {viewProd && (
-        <QuickModal title={viewProd.ref + ' — ' + viewProd.nom} onClose={() => setViewProd(null)}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <div style={{ background: '#f9fafb', borderRadius: 8, padding: 16 }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#6b7280', marginBottom: 10 }}>📦 Produit</h4>
-              <div style={{ fontSize: 13, lineHeight: 2 }}>
-                <div><strong>Référence :</strong> {viewProd.ref}</div>
-                <div><strong>Nom :</strong> {viewProd.nom}</div>
-                <div><strong>Couleur :</strong> {viewProd.couleur || '—'}</div>
-                <div><strong>Catégorie :</strong> {viewProd.categorie || '—'}</div>
-                <div><strong>Prix HT :</strong> {viewProd.prixVente.toFixed(2)}€</div>
-                <div><strong>TVA :</strong> {viewProd.tva}%</div>
-                <div><strong>EAN :</strong> <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{viewProd.ean || '—'}</span></div>
-              </div>
-            </div>
-            <div style={{ background: '#f9fafb', borderRadius: 8, padding: 16 }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#6b7280', marginBottom: 10 }}>📐 Dimensions & Poids</h4>
-              <div style={{ fontSize: 13, lineHeight: 2 }}>
-                <div><strong>Longueur :</strong> {viewProd.longueur ? viewProd.longueur + ' mm' : '—'}</div>
-                <div><strong>Largeur :</strong> {viewProd.largeur ? viewProd.largeur + ' mm' : '—'}</div>
-                <div><strong>Hauteur :</strong> {viewProd.hauteur ? viewProd.hauteur + ' mm' : '—'}</div>
-                <div><strong>Poids brut :</strong> {viewProd.poids ? viewProd.poids + ' kg' : '—'}</div>
-                <div><strong>Poids net :</strong> {viewProd.poidsNet ? viewProd.poidsNet + ' kg' : '—'}</div>
-              </div>
-            </div>
-            <div style={{ background: '#f9fafb', borderRadius: 8, padding: 16 }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#6b7280', marginBottom: 10 }}>📋 Conditionnement</h4>
-              <div style={{ fontSize: 13, lineHeight: 2 }}>
-                <div><strong>PCB (master) :</strong> {viewProd.pcb || '—'}</div>
-                <div><strong>EAN Master :</strong> <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{viewProd.eanMaster || '—'}</span></div>
-              </div>
-            </div>
-            <div style={{ background: '#f9fafb', borderRadius: 8, padding: 16 }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#6b7280', marginBottom: 10 }}>🏗️ Palettisation</h4>
-              <div style={{ fontSize: 13, lineHeight: 2 }}>
-                <div><strong>Produits/palette :</strong> {viewProd.paletteProduits || '—'}</div>
-                <div><strong>Cartons/palette :</strong> {viewProd.paletteCartons || '—'}</div>
-                <div><strong>Stock actuel :</strong> <span style={{ color: viewProd.stock <= viewProd.stockMin ? '#ef4444' : '#22c55e', fontWeight: 700 }}>{viewProd.stock}</span></div>
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-            <button onClick={() => { openEdit(viewProd); setViewProd(null) }} style={{ flex: 1, padding: 10, background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>✏️ Modifier</button>
-            <button onClick={() => setViewProd(null)} style={{ flex: 1, padding: 10, background: '#f3f4f6', color: '#1a1a2e', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>Fermer</button>
-          </div>
-        </QuickModal>
-      )}
       <input type="text" placeholder="🔍 Rechercher..." value={q} onChange={e => { setQ(e.target.value); setPage(0) }} style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 14, marginBottom: 16, boxSizing: 'border-box' }} />
       {showForm && (
         <QuickModal title={editClient ? 'Modifier client' : 'Nouveau client'} onClose={() => setShowForm(false)}>
